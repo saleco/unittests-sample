@@ -1,5 +1,7 @@
 package com.example.unittestssample.services;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class SampleRestServiceImpl implements SampleRestService {
 
     @Override
     public List<SampleRest> getAll(boolean isValid) {
-        if(isValid) {
+        if(this.isValid(isValid)) {
             return sampleRestRepository.findAll();
         } else {
             return Arrays.asList(SampleRest.builder().value("invalid").build());
@@ -31,5 +33,14 @@ public class SampleRestServiceImpl implements SampleRestService {
         return sampleRestRepository.findById(id)
                                    .orElseThrow(() -> new RuntimeException("Sample Rest not found for the id: " + id));
 
+    }
+
+    protected boolean isValid(boolean isValid) {
+        return isValid;
+    }
+
+    protected boolean isActive(LocalDate accountExpirationDate) {
+        if(accountExpirationDate == null) return false;
+        return accountExpirationDate.isAfter(LocalDate.now().minus(1, ChronoUnit.DAYS));
     }
 }
